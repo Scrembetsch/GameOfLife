@@ -1,20 +1,116 @@
-// single_core.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#include "single_core.h"
 
-#include <iostream>
-
-int main()
+int main(int argc, char** argv)
 {
-    std::cout << "Hello World!\n";
+    // Handle arguments
+    std::cout << std::filesystem::current_path() << std::endl;
+    if (!ValidateArguments(argc, argv))
+    {
+        return -1;
+    }
+
+    // Show filenames
+    std::vector<std::string> filenames;
+    if (GetFilenames(mPath, filenames))
+    {
+        std::cout << "Select file:" << std::endl;
+        for (int i = 0; i < filenames.size(); i++)
+        {
+            std::cout << "(" << i << ") " << filenames[i] << std::endl;
+        }
+        std::cout << std::endl << "(x) to end program" << std::endl << std::endl;
+    }
+    else
+    {
+        std::cout << "Error while opening folder:" << mPath << std::endl;
+    }
+
+    // Handle input
+    std::string input;
+    bool validInput = false;
+    int selectedFileId;
+    do
+    {
+        std::cin >> input;
+        if (input == "x")
+        {
+            return 0;
+        }
+        else
+        {
+            std::string::const_iterator it = input.begin();
+            while (it != input.end() && std::isdigit(*it)) ++it;
+            if (!input.empty() && it == input.end())
+            {
+                selectedFileId = std::stoi(input);
+                mSelectedFile = &filenames[selectedFileId];
+                validInput = true;
+            }
+            else
+            {
+                std::cout << "Please select a file!" << std::endl;
+            }
+        }
+    } while (!validInput);
+    
+    std::cout << "Selected File: " << *mSelectedFile << std::endl;
+
+    //InitBoard();
+
+    /*const bool* board = mBoard.GetBoard();
+    for (int i = 0; i < mBoard.mWidth; i++)
+    {
+        for (int j = 0; j < mBoard.mHeight; j++)
+        {
+            std::cout << board[i * mBoard.mHeight * j] ? '#' : '.';
+        }
+        std::cout << std::endl;
+    }*/
+    return 0;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+bool ValidateArguments(int argc, char** argv)
+{
+    if (argc < 2)
+    {
+        std::cout << "FolderPath required" << std::endl;
+        return false;
+    }
+    mPath = std::string(argv[1]);
+    return true;
+}
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+bool InitBoard()
+{
+    std::ifstream boardFile(mPath + "/" + *mSelectedFile);
+    
+    std::string line;
+    int width, height;
+    char comma;
+    boardFile >> width;
+    boardFile >> comma;
+    boardFile >> height;
+
+    mBoard = Board(width, height);
+    int lineCounter = 0;
+    while (std::getline(boardFile, line))
+    {
+        mBoard.WriteLine(lineCounter++, line);
+    }
+
+    boardFile.close();
+    return true;
+}
+
+bool GetFilenames(const std::string& path, std::vector<std::string>& filenames)
+{
+    if (!std::filesystem::exists(path))
+    {
+        return false;
+    }
+    for (const auto& entry : std::filesystem::directory_iterator(path))
+    {
+        filenames.push_back(entry.path().string().erase(0, path.size() + 1));
+    }
+    return true;
+}

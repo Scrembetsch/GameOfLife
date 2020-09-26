@@ -15,18 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="single_core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="board.cpp">
+    <ClCompile Include="Timing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="single_core.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="board.h">
+    <ClInclude Include="Timing.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
