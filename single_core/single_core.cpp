@@ -3,7 +3,6 @@
 int main(int argc, char** argv)
 {
     // Handle arguments
-    std::cout << std::filesystem::current_path() << std::endl;
     if (!ValidateArguments(argc, argv))
     {
         return -1;
@@ -55,17 +54,9 @@ int main(int argc, char** argv)
     
     std::cout << "Selected File: " << *mSelectedFile << std::endl;
 
-    //InitBoard();
+    InitBoard();
 
-    /*const bool* board = mBoard.GetBoard();
-    for (int i = 0; i < mBoard.mWidth; i++)
-    {
-        for (int j = 0; j < mBoard.mHeight; j++)
-        {
-            std::cout << board[i * mBoard.mHeight * j] ? '#' : '.';
-        }
-        std::cout << std::endl;
-    }*/
+    PrintBoard();
     return 0;
 }
 
@@ -76,7 +67,7 @@ bool ValidateArguments(int argc, char** argv)
         std::cout << "FolderPath required" << std::endl;
         return false;
     }
-    mPath = std::string(argv[1]);
+    mPath = std::string(argv[1]) + "/in";
     return true;
 }
 
@@ -93,10 +84,35 @@ bool InitBoard()
 
     mBoard = Board(width, height);
     int lineCounter = 0;
+    std::getline(boardFile, line);
     while (std::getline(boardFile, line))
     {
         mBoard.WriteLine(lineCounter++, line);
     }
+
+    boardFile.close();
+    return true;
+}
+
+bool PrintBoard()
+{
+    std::string outputPath = mPath + "/../out/" + *mSelectedFile + ".out";
+    if (std::filesystem::exists(outputPath))
+    {
+        std::remove(outputPath.c_str());
+    }
+    std::ofstream boardFile(outputPath);
+
+    const bool* board = mBoard.GetBoard();
+    for (int y = 0; y < mBoard.mHeight; y++)
+    {
+        for (int x = 0; x < mBoard.mWidth; x++)
+        {
+            boardFile << (board[x + mBoard.mWidth * y] ? 'x' : '.');
+        }
+        boardFile << std::endl;
+    }
+    boardFile.flush();
 
     boardFile.close();
     return true;

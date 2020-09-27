@@ -16,4 +16,5 @@ Board mBoard;
 int main(int argc, char** argv);
 bool ValidateArguments(int argc, char** argv);
 bool InitBoard();
+bool PrintBoard();
 bool GetFilenames(const std::string& path, std::vector<std::string>& filenames);
