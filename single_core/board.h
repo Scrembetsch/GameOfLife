@@ -2,6 +2,16 @@
 
 #include <string>
 
+class BoardCell
+{
+public:
+	BoardCell();
+	~BoardCell();
+
+	bool mValue;
+	BoardCell* mNeighbors[8];
+};
+
 class Board
 {
 public:
@@ -10,13 +20,15 @@ public:
 	~Board();
 	
 	void WriteLine(int height, const std::string& line);
-	const bool* GetBoard() const;
+	const BoardCell* GetBoard() const;
 	void PlayRound();
-	bool CheckNeighbors(int currentCell);
+	bool CheckNextState(const BoardCell* currentCell);
+	bool Check(int w, int h);
+	bool InField(int w, int h);
 
 	int mWidth;
 	int mHeight;
 protected:
-	bool* mBoard;
-	bool* mTempBoard;
+	BoardCell* mBoard;
+	BoardCell* mTempBoard;
 };

@@ -55,7 +55,10 @@ int main(int argc, char** argv)
     std::cout << "Selected File: " << *mSelectedFile << std::endl;
 
     InitBoard();
-
+    for (int i = 0; i < 250; i++)
+    {
+        mBoard.PlayRound();
+    }
     PrintBoard();
     return 0;
 }
@@ -103,12 +106,13 @@ bool PrintBoard()
     }
     std::ofstream boardFile(outputPath);
 
-    const bool* board = mBoard.GetBoard();
+    const BoardCell* board = mBoard.GetBoard();
+    boardFile << mBoard.mWidth << "," << mBoard.mHeight << std::endl;
     for (int y = 0; y < mBoard.mHeight; y++)
     {
         for (int x = 0; x < mBoard.mWidth; x++)
         {
-            boardFile << (board[x + mBoard.mWidth * y] ? 'x' : '.');
+            boardFile << (board[x + mBoard.mWidth * y].mValue ? 'x' : '.');
         }
         boardFile << std::endl;
     }
