@@ -1,5 +1,15 @@
 #include "single_core.h"
 
+BoardCell::BoardCell()
+    : mValue(false)
+    , mNeighbors()
+{
+}
+
+BoardCell::~BoardCell()
+{
+}
+
 int main(int argc, char** argv)
 {
     // Handle arguments
@@ -58,7 +68,16 @@ int main(int argc, char** argv)
     Timing::getInstance()->startComputation();
     for (int i = 0; i < 250; i++)
     {
-        mBoard.PlayRound();
+        for (int j = 0; j < mSize; j++)
+        {
+            int livingNeighbors = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                livingNeighbors += mBoard[j].mNeighbors[j]->mValue;
+            }
+            mTempBoard[j].mValue = livingNeighbors == 3 || (livingNeighbors == 2 && mBoard[j].mValue);
+        }
+        std::swap(mTempBoard, mBoard);
     }
     Timing::getInstance()->stopComputation();
     PrintBoard();
@@ -83,18 +102,52 @@ bool InitBoard()
     std::ifstream boardFile(mPath + "/" + *mSelectedFile);
     
     std::string line;
-    int width, height;
     char comma;
-    boardFile >> width;
+    boardFile >> mWidth;
     boardFile >> comma;
-    boardFile >> height;
+    boardFile >> mHeight;
 
-    mBoard = Board(width, height);
+    mSize = mWidth * mHeight;
+
+    mBoard = new BoardCell[mSize];
+    mTempBoard = new BoardCell[mSize];
     int lineCounter = 0;
     std::getline(boardFile, line);
     while (std::getline(boardFile, line))
     {
-        mBoard.WriteLine(lineCounter++, line);
+        for (uint32_t i = 0; i < line.size(); i++)
+        {
+            BoardCell bc;
+            BoardCell tbc;
+            bc.mValue = line[i] == 'x';
+
+            int y_ = (lineCounter - 1 + mHeight) % mHeight;
+            int x_ = (i - 1 + mWidth) % mWidth;
+            int y1 = (lineCounter + 1 + mHeight) % mHeight;
+            int x1 = (i + 1 + mWidth) % mWidth;
+
+            bc.mNeighbors[0] = &mBoard[x_ + mWidth * y_];
+            bc.mNeighbors[1] = &mBoard[i + mWidth * y_];
+            bc.mNeighbors[2] = &mBoard[x1 + mWidth * y_];
+            bc.mNeighbors[3] = &mBoard[x_ + mWidth * lineCounter];
+            bc.mNeighbors[4] = &mBoard[x1 + mWidth * lineCounter];
+            bc.mNeighbors[5] = &mBoard[x_ + mWidth * y1];
+            bc.mNeighbors[6] = &mBoard[i + mWidth * y1];
+            bc.mNeighbors[7] = &mBoard[x1 + mWidth * y1];
+
+            tbc.mNeighbors[0] = &mTempBoard[x_ + mWidth * y_];
+            tbc.mNeighbors[1] = &mTempBoard[i + mWidth * y_];
+            tbc.mNeighbors[2] = &mTempBoard[x1 + mWidth * y_];
+            tbc.mNeighbors[3] = &mTempBoard[x_ + mWidth * lineCounter];
+            tbc.mNeighbors[4] = &mTempBoard[x1 + mWidth * lineCounter];
+            tbc.mNeighbors[5] = &mTempBoard[x_ + mWidth * y1];
+            tbc.mNeighbors[6] = &mTempBoard[i + mWidth * y1];
+            tbc.mNeighbors[7] = &mTempBoard[x1 + mWidth * y1];
+
+            mBoard[i + mWidth * lineCounter] = bc;
+            mTempBoard[i + mWidth * lineCounter] = tbc;
+        }
+        ++lineCounter;
     }
 
     boardFile.close();
@@ -112,13 +165,12 @@ bool PrintBoard()
     }
     std::ofstream boardFile(outputPath);
 
-    const BoardCell* board = mBoard.GetBoard();
-    boardFile << mBoard.mWidth << "," << mBoard.mHeight << std::endl;
-    for (int y = 0; y < mBoard.mHeight; y++)
+    boardFile << mWidth << "," << mHeight << std::endl;
+    for (int y = 0; y < mHeight; y++)
     {
-        for (int x = 0; x < mBoard.mWidth; x++)
+        for (int x = 0; x < mWidth; x++)
         {
-            boardFile << (board[x + mBoard.mWidth * y].mValue ? 'x' : '.');
+            boardFile << (mBoard[x + mWidth * y].mValue ? 'x' : '.');
         }
         boardFile << std::endl;
     }
