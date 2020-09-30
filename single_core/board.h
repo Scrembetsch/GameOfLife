@@ -23,11 +23,10 @@ public:
 	const BoardCell* GetBoard() const;
 	void PlayRound();
 	bool CheckNextState(const BoardCell* currentCell);
-	bool Check(int w, int h);
-	bool InField(int w, int h);
 
 	int mWidth;
 	int mHeight;
+	int mSize;
 protected:
 	BoardCell* mBoard;
 	BoardCell* mTempBoard;

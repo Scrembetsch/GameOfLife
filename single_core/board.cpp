@@ -18,8 +18,9 @@ Board::Board()
 Board::Board(int width, int height)
 	: mWidth(width)
 	, mHeight(height)
-	, mBoard(new BoardCell[width *  height])
-	, mTempBoard(new BoardCell[width *  height])
+	, mSize(mWidth * mHeight)
+	, mBoard(new BoardCell[mSize])
+	, mTempBoard(new BoardCell[mSize])
 {
 }
 
@@ -33,19 +34,7 @@ void Board::WriteLine(int height, const std::string& line)
 	{
 		BoardCell bc;
 		BoardCell tbc;
-		switch (line[i])
-		{
-			default:
-				return;
-
-			case 'x':
-				bc.mValue = true;
-				break;
-
-			case '.':
-				bc.mValue = false;
-				break;
-		}
+		bc.mValue = line[i] == 'x';
 
 		int y_ = (height - 1 + mHeight) % mHeight;
 		int x_ = (i - 1 + mWidth) % mWidth;
@@ -77,39 +66,11 @@ void Board::WriteLine(int height, const std::string& line)
 
 void Board::PlayRound()
 {
-	int size = mWidth * mHeight;
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < mSize; i++)
 	{
 		mTempBoard[i].mValue = CheckNextState(&mBoard[i]);
 	}
 	std::swap(mTempBoard, mBoard);
-}
-
-bool Board::Check(int w, int h)
-{
-	const int x[] = {-1, -1, -1,  1, 1, 1,  0, 0};// 8 shifts to neighbors
-	const int y[] = {-1,  0,  1, -1, 0, 1, -1, 1};// used in functions 
-	int livingNeighbors = 0;
-	for (int i = 0; i < 8; ++i)// visit the 8 spaces around it
-	{
-		int newX = (w + x[i] + mWidth) % mWidth;
-		int newY = (h + y[i] + mHeight) % mHeight;
-		livingNeighbors += mBoard[(newX) + mWidth * (newY)].mValue ? 1 : 0;
-	}
-
-	switch (livingNeighbors)
-	{
-		default:
-			return false;
-
-		case 2:
-			return mBoard[w + mWidth * h].mValue;
-
-		case 3:
-			return true;
-
-	}
-	return true;
 }
 
 bool Board::CheckNextState(const BoardCell* currentCell)
@@ -117,20 +78,9 @@ bool Board::CheckNextState(const BoardCell* currentCell)
 	int livingNeighbors = 0;
 	for (int i = 0; i < 8; i++)
 	{
-		livingNeighbors += (currentCell->mNeighbors[i]->mValue ? 1 : 0);
+		livingNeighbors += currentCell->mNeighbors[i]->mValue;
 	}
-	switch (livingNeighbors)
-	{
-		default:
-			return false;
-
-		case 2:
-			return currentCell->mValue;
-
-		case 3:
-			return true;
-	}
-	return false;
+	return livingNeighbors == 3 || (livingNeighbors == 2 && currentCell->mValue);
 }
 
 const BoardCell* Board::GetBoard() const
