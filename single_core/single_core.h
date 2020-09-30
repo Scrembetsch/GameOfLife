@@ -8,20 +8,12 @@
 
 #include "Timing.h"
 
-class BoardCell
-{
-public:
-	BoardCell();
-	~BoardCell();
-
-	bool mValue;
-	BoardCell* mNeighbors[8];
-};
-
 std::string mPath;
 std::string* mSelectedFile;
-BoardCell* mBoard;
-BoardCell* mTempBoard;
+bool* mBoard;
+bool* mTempBoard;
+bool** mBoardNeighbors;
+bool** mTempBoardNeighbors;
 int mWidth = 0;
 int mHeight = 0;
 int mSize = 0;

@@ -1,15 +1,5 @@
 #include "single_core.h"
 
-BoardCell::BoardCell()
-    : mValue(false)
-    , mNeighbors()
-{
-}
-
-BoardCell::~BoardCell()
-{
-}
-
 int main(int argc, char** argv)
 {
     // Handle arguments
@@ -71,13 +61,14 @@ int main(int argc, char** argv)
         for (int j = 0; j < mSize; j++)
         {
             int livingNeighbors = 0;
-            for (int i = 0; i < 8; i++)
+            for (int k = 0; k < 8; k++)
             {
-                livingNeighbors += mBoard[j].mNeighbors[j]->mValue;
+                livingNeighbors += *mBoardNeighbors[k + 8 * j];
             }
-            mTempBoard[j].mValue = livingNeighbors == 3 || (livingNeighbors == 2 && mBoard[j].mValue);
+            mTempBoard[j] = livingNeighbors == 3 || (livingNeighbors == 2 && mBoard[j]);
         }
         std::swap(mTempBoard, mBoard);
+        std::swap(mTempBoardNeighbors, mBoardNeighbors);
     }
     Timing::getInstance()->stopComputation();
     PrintBoard();
@@ -109,43 +100,46 @@ bool InitBoard()
 
     mSize = mWidth * mHeight;
 
-    mBoard = new BoardCell[mSize];
-    mTempBoard = new BoardCell[mSize];
+    mBoard = new bool[mSize];
+    mTempBoard = new bool[mSize];
+    mBoardNeighbors = new bool* [mSize * 8];
+    mTempBoardNeighbors = new bool* [mSize * 8];
     int lineCounter = 0;
     std::getline(boardFile, line);
     while (std::getline(boardFile, line))
     {
         for (uint32_t i = 0; i < line.size(); i++)
         {
-            BoardCell bc;
-            BoardCell tbc;
-            bc.mValue = line[i] == 'x';
+            bool bc = line[i] == 'x';
+            bool tbc = false;
+
+            int pos = i + mWidth * lineCounter;
 
             int y_ = (lineCounter - 1 + mHeight) % mHeight;
             int x_ = (i - 1 + mWidth) % mWidth;
             int y1 = (lineCounter + 1 + mHeight) % mHeight;
             int x1 = (i + 1 + mWidth) % mWidth;
 
-            bc.mNeighbors[0] = &mBoard[x_ + mWidth * y_];
-            bc.mNeighbors[1] = &mBoard[i + mWidth * y_];
-            bc.mNeighbors[2] = &mBoard[x1 + mWidth * y_];
-            bc.mNeighbors[3] = &mBoard[x_ + mWidth * lineCounter];
-            bc.mNeighbors[4] = &mBoard[x1 + mWidth * lineCounter];
-            bc.mNeighbors[5] = &mBoard[x_ + mWidth * y1];
-            bc.mNeighbors[6] = &mBoard[i + mWidth * y1];
-            bc.mNeighbors[7] = &mBoard[x1 + mWidth * y1];
+            mBoardNeighbors[0 + 8 * pos] = &mBoard[x_ + mWidth * y_];
+            mBoardNeighbors[1 + 8 * pos] = &mBoard[i + mWidth * y_];
+            mBoardNeighbors[2 + 8 * pos] = &mBoard[x1 + mWidth * y_];
+            mBoardNeighbors[3 + 8 * pos] = &mBoard[x_ + mWidth * lineCounter];
+            mBoardNeighbors[4 + 8 * pos] = &mBoard[x1 + mWidth * lineCounter];
+            mBoardNeighbors[5 + 8 * pos] = &mBoard[x_ + mWidth * y1];
+            mBoardNeighbors[6 + 8 * pos] = &mBoard[i + mWidth * y1];
+            mBoardNeighbors[7 + 8 * pos] = &mBoard[x1 + mWidth * y1];
 
-            tbc.mNeighbors[0] = &mTempBoard[x_ + mWidth * y_];
-            tbc.mNeighbors[1] = &mTempBoard[i + mWidth * y_];
-            tbc.mNeighbors[2] = &mTempBoard[x1 + mWidth * y_];
-            tbc.mNeighbors[3] = &mTempBoard[x_ + mWidth * lineCounter];
-            tbc.mNeighbors[4] = &mTempBoard[x1 + mWidth * lineCounter];
-            tbc.mNeighbors[5] = &mTempBoard[x_ + mWidth * y1];
-            tbc.mNeighbors[6] = &mTempBoard[i + mWidth * y1];
-            tbc.mNeighbors[7] = &mTempBoard[x1 + mWidth * y1];
+            mTempBoardNeighbors[0 + 8 * pos] = &mTempBoard[x_ + mWidth * y_];
+            mTempBoardNeighbors[1 + 8 * pos] = &mTempBoard[i + mWidth * y_];
+            mTempBoardNeighbors[2 + 8 * pos] = &mTempBoard[x1 + mWidth * y_];
+            mTempBoardNeighbors[3 + 8 * pos] = &mTempBoard[x_ + mWidth * lineCounter];
+            mTempBoardNeighbors[4 + 8 * pos] = &mTempBoard[x1 + mWidth * lineCounter];
+            mTempBoardNeighbors[5 + 8 * pos] = &mTempBoard[x_ + mWidth * y1];
+            mTempBoardNeighbors[6 + 8 * pos] = &mTempBoard[i + mWidth * y1];
+            mTempBoardNeighbors[7 + 8 * pos] = &mTempBoard[x1 + mWidth * y1];
 
-            mBoard[i + mWidth * lineCounter] = bc;
-            mTempBoard[i + mWidth * lineCounter] = tbc;
+            mBoard[pos] = bc;
+            mTempBoard[pos] = tbc;
         }
         ++lineCounter;
     }
@@ -170,7 +164,7 @@ bool PrintBoard()
     {
         for (int x = 0; x < mWidth; x++)
         {
-            boardFile << (mBoard[x + mWidth * y].mValue ? 'x' : '.');
+            boardFile << (mBoard[x + mWidth * y] ? 'x' : '.');
         }
         boardFile << std::endl;
     }
