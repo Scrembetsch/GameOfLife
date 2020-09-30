@@ -144,12 +144,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="board.cpp" />
     <ClCompile Include="single_core.cpp" />
     <ClCompile Include="Timing.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="board.h" />
     <ClInclude Include="single_core.h" />
     <ClInclude Include="Timing.h" />
   </ItemGroup>

@@ -6,12 +6,17 @@
 #include <string>
 #include <vector>
 
-#include "board.h"
 #include "Timing.h"
 
 std::string mPath;
 std::string* mSelectedFile;
-Board mBoard;
+bool* mBoard;
+bool* mTempBoard;
+bool** mBoardNeighbors;
+bool** mTempBoardNeighbors;
+int mWidth = 0;
+int mHeight = 0;
+int mSize = 0;
 
 int main(int argc, char** argv);
 bool ValidateArguments(int argc, char** argv);
