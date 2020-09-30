@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "board.h"
-#include "../timing/Timing.h"
+#include "Timing.h"
 
 std::string mPath;
 std::string* mSelectedFile;

@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     if (GetFilenames(mPath, filenames))
     {
         std::cout << "Select file:" << std::endl;
-        for (int i = 0; i < filenames.size(); i++)
+        for (uint32_t i = 0; i < filenames.size(); i++)
         {
             std::cout << "(" << i << ") " << filenames[i] << std::endl;
         }
@@ -55,13 +55,16 @@ int main(int argc, char** argv)
     std::cout << "Selected File: " << *mSelectedFile << std::endl;
 
     InitBoard();
+    Timing::getInstance()->startComputation();
     for (int i = 0; i < 250; i++)
     {
         mBoard.PlayRound();
     }
+    Timing::getInstance()->stopComputation();
     PrintBoard();
+    Timing::getInstance()->print(true);
     return 0;
-}
+} 
 
 bool ValidateArguments(int argc, char** argv)
 {
@@ -76,6 +79,7 @@ bool ValidateArguments(int argc, char** argv)
 
 bool InitBoard()
 {
+    Timing::getInstance()->startSetup();
     std::ifstream boardFile(mPath + "/" + *mSelectedFile);
     
     std::string line;
@@ -94,11 +98,13 @@ bool InitBoard()
     }
 
     boardFile.close();
+    Timing::getInstance()->stopSetup();
     return true;
 }
 
 bool PrintBoard()
 {
+    Timing::getInstance()->startFinalization();
     std::string outputPath = mPath + "/../out/" + *mSelectedFile + ".out";
     if (std::filesystem::exists(outputPath))
     {
@@ -119,6 +125,7 @@ bool PrintBoard()
     boardFile.flush();
 
     boardFile.close();
+    Timing::getInstance()->stopFinalization();
     return true;
 }
 

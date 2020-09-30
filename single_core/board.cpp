@@ -29,7 +29,7 @@ Board::~Board()
 
 void Board::WriteLine(int height, const std::string& line)
 {
-	for (int i = 0; i < line.size(); i++)
+	for (uint32_t i = 0; i < line.size(); i++)
 	{
 		BoardCell bc;
 		BoardCell tbc;
@@ -77,14 +77,10 @@ void Board::WriteLine(int height, const std::string& line)
 
 void Board::PlayRound()
 {
-	for (int i = 0; i < mWidth; i++)
+	int size = mWidth * mHeight;
+	for (int i = 0; i < size; i++)
 	{
-		for (int j = 0; j < mHeight; j++)
-		{
-			int currentCell = i + mWidth * j;
-			//mTempBoard[currentCell].mValue = Check(i, j);
-			mTempBoard[currentCell].mValue = CheckNextState(&mBoard[currentCell]);
-		}
+		mTempBoard[i].mValue = CheckNextState(&mBoard[i]);
 	}
 	std::swap(mTempBoard, mBoard);
 }
@@ -133,7 +129,6 @@ bool Board::CheckNextState(const BoardCell* currentCell)
 
 		case 3:
 			return true;
-
 	}
 	return false;
 }
