@@ -21,12 +21,24 @@
     <ClCompile Include="GoL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SingleCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiCoreMP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Timing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GoL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiCoreMP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

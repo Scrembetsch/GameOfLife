@@ -145,10 +145,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GoL.cpp" />
+    <ClCompile Include="MultiCoreMP.cpp" />
+    <ClCompile Include="SingleCore.cpp" />
     <ClCompile Include="Timing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GoL.h" />
+    <ClInclude Include="MultiCoreMP.h" />
+    <ClInclude Include="SingleCore.h" />
     <ClInclude Include="Timing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
