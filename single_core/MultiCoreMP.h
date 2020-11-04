@@ -7,6 +7,7 @@ namespace MP
 	extern int mNumGenerations;
 	extern std::string mInputFile;
 	extern std::string mOutputFile;
+	extern int mNumThreads;
 
 	extern bool* mBoard;
 	extern bool* mTempBoard;
@@ -16,7 +17,7 @@ namespace MP
 	extern int mHeight;
 	extern int mSize;
 
-	int PlayGame(const std::string& inputFile, const std::string& saveFile, int generations);
+	int PlayGame(const std::string& inputFile, const std::string& saveFile, int generations, int numThreads);
 
 	bool InitBoard();
 	bool CalcGenerations();
