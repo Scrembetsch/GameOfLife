@@ -1,3 +1,4 @@
+#include <cstring>
 #include <fstream>
 #include <filesystem>
 #include <iostream>
@@ -19,7 +20,6 @@ namespace SC
 	int mHeight;
 	int mSize;
 }
-
 
 int SC::PlayGame(const std::string& inputFile, const std::string& saveFile, int generations)
 {
@@ -99,16 +99,19 @@ bool SC::InitBoard()
 bool SC::CalcGenerations()
 {
     Timing::getInstance()->startComputation();
-    for (int i = 0; i < mNumGenerations; i++)
+    for (int i = 0; i < mNumGenerations; ++i)
     {
-        for (int j = 0; j < mSize; j++)
+        for (int j = 0; j < mSize; ++j)
         {
-            int livingNeighbors = 0;
-            for (int k = 0; k < 8; k++)
+            int livingNeighbors = mBoard[j];
+            bool** k = mBoardNeighbors + j * 8;
+            bool** offset1 = k + 8;
+            for (; k < offset1; ++k)
             {
-                livingNeighbors += *mBoardNeighbors[k + 8 * j];
+                livingNeighbors += **k;
             }
-            mTempBoard[j] = livingNeighbors == 3 || (livingNeighbors == 2 && mBoard[j]);
+
+            mTempBoard[j] = livingNeighbors == 3 + mBoard[j] * (livingNeighbors == 4);
         }
         std::swap(mTempBoard, mBoard);
         std::swap(mTempBoardNeighbors, mBoardNeighbors);

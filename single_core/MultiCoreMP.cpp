@@ -117,12 +117,15 @@ namespace MP
 #pragma omp for
                 for (int j = 0; j < mSize; j++)
                 {
-                    int livingNeighbors = 0;
-                    for (int k = 0; k < 8; k++)
+                    int livingNeighbors = mBoard[j];
+                    bool** offset = mBoardNeighbors + j * 8;
+                    bool** offset1 = offset + 8;
+                    for (bool** k = offset; k < offset1; k++)
                     {
-                        livingNeighbors += *mBoardNeighbors[k + 8 * j];
+                        livingNeighbors += **k;
                     }
-                    mTempBoard[j] = livingNeighbors == 3 || (livingNeighbors == 2 && mBoard[j]);
+
+                    mTempBoard[j] = livingNeighbors == 3 + mBoard[j] * (livingNeighbors == 4);
                 }
             }
             std::swap(mTempBoard, mBoard);
