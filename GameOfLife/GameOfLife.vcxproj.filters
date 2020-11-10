@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="GoL.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiCoreCL.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiCoreMP.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleCore.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Timing.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GoL.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiCoreCL.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiCoreMP.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleCore.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Timing.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{78c68ed7-9e52-47a7-b571-4acdd6360085}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{5aae976b-591f-41d3-84b5-2b1489ca18f7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

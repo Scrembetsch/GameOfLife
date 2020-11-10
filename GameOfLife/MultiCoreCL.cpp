@@ -63,7 +63,7 @@ namespace CL
         }
         // Use selected Platform -> Default: 0->GPU, 1->CPU
         cl::Platform default_platform = all_platforms[mDevice];
-        std::cout << "Using platform: " << default_platform.getInfo<CL_PLATFORM_NAME>() << "\n";
+        //std::cout << "Using platform: " << default_platform.getInfo<CL_PLATFORM_NAME>() << "\n";
 
         // Get the Devices of the selected platform (if PC has mutliple graphic cards)
         std::vector<cl::Device> all_devices;
@@ -75,7 +75,7 @@ namespace CL
         }
         // Ignore multiple devices, Always tkae first
         cl::Device default_device = all_devices[0];
-        std::cout << "Using device: " << default_device.getInfo<CL_DEVICE_NAME>() << "\n";
+        //std::cout << "Using device: " << default_device.getInfo<CL_DEVICE_NAME>() << "\n";
 
         cl::Context context({default_device});
         cl::Program::Sources sources;

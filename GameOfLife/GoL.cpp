@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
     if (mPrintMeasurment)
     {
-        Timing::getInstance()->print(true);
+        std::cout << Timing::getInstance()->getResults() << std::endl;
     }
     else
     {

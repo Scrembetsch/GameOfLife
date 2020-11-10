@@ -24,6 +24,7 @@
     <ProjectGuid>{8f89df29-6b28-4d2e-8153-ac6cf96d2a65}</ProjectGuid>
     <RootNamespace>singlecore</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>game_of_life</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
