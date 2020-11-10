@@ -72,10 +72,14 @@ namespace MP
 
                     int pos = i + mWidth * lineCounter;
 
-                    int y_ = (lineCounter - 1 + mHeight) % mHeight;
-                    int x_ = (i - 1 + mWidth) % mWidth;
-                    int y1 = (lineCounter + 1 + mHeight) % mHeight;
-                    int x1 = (i + 1 + mWidth) % mWidth;
+                    int y_ = lineCounter - 1;
+                    y_ += (y_ < 0) * mHeight;
+                    int x_ = i - 1;
+                    x_ += (x_ < 0) * mWidth;
+                    int y1 = lineCounter + 1;
+                    y1 -= (y1 >= mHeight) * mHeight;
+                    int x1 = i + 1;
+                    x1 -= (x1 >= mWidth) * mWidth;
 
                     mBoardNeighbors[0 + 8 * pos] = &mBoard[x_ + mWidth * y_];
                     mBoardNeighbors[1 + 8 * pos] = &mBoard[i + mWidth * y_];

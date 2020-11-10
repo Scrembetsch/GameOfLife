@@ -11,8 +11,8 @@ enum Mode
 
 enum Device
 {
-	CPU,
-	GPU
+	GPU,
+	CPU
 };
 
 int mNumGenerations;

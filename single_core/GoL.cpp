@@ -6,6 +6,7 @@
 #include "GoL.h"
 #include "SingleCore.h"
 #include "MultiCoreMP.h"
+#include "MultiCoreCL.h"
 #include "Timing.h"
 
 int main(int argc, char** argv)
@@ -27,6 +28,7 @@ int main(int argc, char** argv)
             break;
 
         case OCL:
+            CL::PlayGame(mInputFile, mOutputFile, mNumGenerations, mDevice);
             break;
 
         default:
@@ -77,6 +79,7 @@ bool LoadArguments(int argc, char** argv)
                     std::cout << "InputFile doesn't exist!" << std::endl;
                     noError = false;
                 }
+                inFile.close();
             }
             else
             {

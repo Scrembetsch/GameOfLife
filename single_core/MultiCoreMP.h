@@ -7,7 +7,7 @@ namespace MP
 	extern int mNumGenerations;
 	extern std::string mInputFile;
 	extern std::string mOutputFile;
-	extern int mNumThreads;
+	extern int mDevice;
 
 	extern bool* mBoard;
 	extern bool* mTempBoard;
