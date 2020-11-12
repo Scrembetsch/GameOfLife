@@ -106,9 +106,12 @@ namespace CL
         mBoardBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(int) * mSize);
         mTempBoardBuffer = cl::Buffer(context, CL_MEM_READ_WRITE, sizeof(int) * mSize);
 
-       mQueue = cl::CommandQueue(context, default_device);
+        mQueue = cl::CommandQueue(context, default_device);
 
         mGolKernel = cl::Kernel(mProgram, "gol_generation");
+
+        mQueue.enqueueWriteBuffer(mBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mBoard);
+        mQueue.enqueueWriteBuffer(mTempBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mTempBoard);
         return true;
     }
 
@@ -155,9 +158,6 @@ namespace CL
 
         // UseTemp is used to control if in CL, the if is used to avoid memory copy after each generation
         bool useTemp = true;
-        mQueue.enqueueWriteBuffer(mBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mBoard);
-        mQueue.enqueueWriteBuffer(mTempBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mTempBoard);
-
         for (int i = 0; i < mNumGenerations; i++)
         {
             useTemp = !useTemp;
