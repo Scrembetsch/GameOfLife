@@ -152,20 +152,31 @@ namespace CL
     bool CalcGenerations()
     {
         Timing::getInstance()->startComputation();
+
+        // UseTemp is used to control if in CL, the if is used to avoid memory copy after each generation
+        bool useTemp = true;
+        mQueue.enqueueWriteBuffer(mBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mBoard);
+        mQueue.enqueueWriteBuffer(mTempBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mTempBoard);
+
         for (int i = 0; i < mNumGenerations; i++)
         {
-            mQueue.enqueueWriteBuffer(mBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mBoard);
-            mQueue.enqueueWriteBuffer(mTempBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mTempBoard);
+            useTemp = !useTemp;
 
             mGolKernel.setArg(0, mBoardBuffer);
             mGolKernel.setArg(1, mTempBoardBuffer);
-            mGolKernel.setArg(2, cl_int(mWidth));
-            mGolKernel.setArg(3, cl_int(mHeight));
+            mGolKernel.setArg(2, cl_int(useTemp));
+            mGolKernel.setArg(3, cl_int(mWidth));
+            mGolKernel.setArg(4, cl_int(mHeight));
             mQueue.enqueueNDRangeKernel(mGolKernel, cl::NullRange, cl::NDRange(mSize), cl::NullRange);
             mQueue.finish();
-
+        }
+        if (useTemp)
+        {
+            mQueue.enqueueReadBuffer(mBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mBoard);
+        }
+        else
+        {
             mQueue.enqueueReadBuffer(mTempBoardBuffer, CL_TRUE, 0, sizeof(int) * mSize, mTempBoard);
-
             std::swap(mTempBoard, mBoard);
         }
 

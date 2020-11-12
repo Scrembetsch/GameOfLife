@@ -1,4 +1,4 @@
-void kernel gol_generation(global int* board, global int* tempBoard, int width, int height)
+void kernel gol_generation(global int* board, global int* tempBoard, int useTemp, int width, int height)
 {
     int id = get_global_id(0);
     int x = id % width;
@@ -13,17 +13,37 @@ void kernel gol_generation(global int* board, global int* tempBoard, int width, 
     int x1 = x + 1;
     x1 -= (x1 >= width) * width;
 
-    int livingNeighbors = board[id];
-    livingNeighbors += board[x_ + width * y_];
-    livingNeighbors += board[x + width * y_];
-    livingNeighbors += board[x1 + width * y_];
+    if(useTemp > 0)
+    {
+        int livingNeighbors = tempBoard[id];
+        livingNeighbors += tempBoard[x_ + width * y_];
+        livingNeighbors += tempBoard[x + width * y_];
+        livingNeighbors += tempBoard[x1 + width * y_];
 
-    livingNeighbors += board[x_ + width * y];
-    livingNeighbors += board[x1 + width * y];
+        livingNeighbors += tempBoard[x_ + width * y];
+        livingNeighbors += tempBoard[x1 + width * y];
 
-    livingNeighbors += board[x_ + width * y1];
-    livingNeighbors += board[x + width * y1];
-    livingNeighbors += board[x1 + width * y1];
+        livingNeighbors += tempBoard[x_ + width * y1];
+        livingNeighbors += tempBoard[x + width * y1];
+        livingNeighbors += tempBoard[x1 + width * y1];
 
-    tempBoard[id] = (livingNeighbors == 3 + board[id] * (livingNeighbors == 4)) > 0;
+        board[id] = (livingNeighbors == 3 + tempBoard[id] * (livingNeighbors == 4)) > 0;
+    }
+    else
+    {
+        int livingNeighbors = board[id];
+        livingNeighbors += board[x_ + width * y_];
+        livingNeighbors += board[x + width * y_];
+        livingNeighbors += board[x1 + width * y_];
+
+        livingNeighbors += board[x_ + width * y];
+        livingNeighbors += board[x1 + width * y];
+
+        livingNeighbors += board[x_ + width * y1];
+        livingNeighbors += board[x + width * y1];
+        livingNeighbors += board[x1 + width * y1];
+
+        tempBoard[id] = (livingNeighbors == 3 + board[id] * (livingNeighbors == 4)) > 0;
+    }
+
 }

@@ -109,6 +109,7 @@ namespace SC
                 int livingNeighbors = mBoard[j];
                 bool** k = mBoardNeighbors + j * 8;
                 bool** offset1 = k + 8;
+
                 for (; k < offset1; ++k)
                 {
                     livingNeighbors += **k;

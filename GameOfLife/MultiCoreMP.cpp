@@ -122,9 +122,10 @@ namespace MP
                 for (int j = 0; j < mSize; j++)
                 {
                     int livingNeighbors = mBoard[j];
-                    bool** offset = mBoardNeighbors + j * 8;
-                    bool** offset1 = offset + 8;
-                    for (bool** k = offset; k < offset1; k++)
+                    bool** k = mBoardNeighbors + j * 8;
+                    bool** offset1 = k + 8;
+
+                    for (; k < offset1; ++k)
                     {
                         livingNeighbors += **k;
                     }
