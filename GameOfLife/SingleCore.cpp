@@ -6,20 +6,29 @@
 #include "SingleCore.h"
 #include "Timing.h"
 
+#define CALC_NEIGHBORS(board, width, living, x_, x, x1, y_, y, y2) {\
+                    living = board[x_ + width * y_];\
+                    living+= board[x + width * y_];\
+                    living+= board[x1 + width * y_];\
+                    living+= board[x_ + width * y];\
+                    living+= board[x1 + width * y];\
+                    living+= board[x_ + width * y2];\
+                    living+= board[x + width * y2];\
+                    living+= board[x1 + width * y2];\
+                    }\
+
 namespace SC
 {
     int mNumGenerations;
     std::string mInputFile;
     std::string mOutputFile;
 
-    bool* mBoard;
-    bool* mTempBoard;
-    bool** mBoardNeighbors;
-    bool** mTempBoardNeighbors;
+    ARR_TYPE* mBoard;
+    ARR_TYPE* mTempBoard;
     int mWidth;
     int mHeight;
     int mSize;
-
+    
     int PlayGame(const std::string& inputFile, const std::string& saveFile, int generations)
     {
         mInputFile = inputFile;
@@ -46,10 +55,8 @@ namespace SC
 
         mSize = mWidth * mHeight;
 
-        mBoard = new bool[mSize];
-        mTempBoard = new bool[mSize];
-        mBoardNeighbors = new bool* [mSize * 8];
-        mTempBoardNeighbors = new bool* [mSize * 8];
+        mBoard = new ARR_TYPE[mSize];
+        mTempBoard = new ARR_TYPE[mSize];
         int lineCounter = 0;
         std::getline(boardFile, line);
         while (std::getline(boardFile, line))
@@ -70,24 +77,6 @@ namespace SC
                 int x1 = i + 1;
                 x1 -= (x1 >= mWidth) * mWidth;
 
-                mBoardNeighbors[0 + 8 * pos] = &mBoard[x_ + mWidth * y_];
-                mBoardNeighbors[1 + 8 * pos] = &mBoard[i + mWidth * y_];
-                mBoardNeighbors[2 + 8 * pos] = &mBoard[x1 + mWidth * y_];
-                mBoardNeighbors[3 + 8 * pos] = &mBoard[x_ + mWidth * lineCounter];
-                mBoardNeighbors[4 + 8 * pos] = &mBoard[x1 + mWidth * lineCounter];
-                mBoardNeighbors[5 + 8 * pos] = &mBoard[x_ + mWidth * y1];
-                mBoardNeighbors[6 + 8 * pos] = &mBoard[i + mWidth * y1];
-                mBoardNeighbors[7 + 8 * pos] = &mBoard[x1 + mWidth * y1];
-
-                mTempBoardNeighbors[0 + 8 * pos] = &mTempBoard[x_ + mWidth * y_];
-                mTempBoardNeighbors[1 + 8 * pos] = &mTempBoard[i + mWidth * y_];
-                mTempBoardNeighbors[2 + 8 * pos] = &mTempBoard[x1 + mWidth * y_];
-                mTempBoardNeighbors[3 + 8 * pos] = &mTempBoard[x_ + mWidth * lineCounter];
-                mTempBoardNeighbors[4 + 8 * pos] = &mTempBoard[x1 + mWidth * lineCounter];
-                mTempBoardNeighbors[5 + 8 * pos] = &mTempBoard[x_ + mWidth * y1];
-                mTempBoardNeighbors[6 + 8 * pos] = &mTempBoard[i + mWidth * y1];
-                mTempBoardNeighbors[7 + 8 * pos] = &mTempBoard[x1 + mWidth * y1];
-
                 mBoard[pos] = bc;
                 mTempBoard[pos] = tbc;
             }
@@ -101,24 +90,132 @@ namespace SC
 
     bool CalcGenerations()
     {
+        int x = 0;
+        int y = 0;
+        int y_ = 0;
+        int x_ = 0;
+        int y1 = 0;
+        int x1 = 0;
+        int pos = 0;
+        int mWidthSmall = mWidth - 1;
+        int mHeightSmall = mHeight - 1;
+        int mWidthMini = mWidthSmall - 1;
+        int mHeightMini = mHeightSmall - 1;
+        ARR_TYPE livingNeighbors = 0;
+        ARR_TYPE* it = 0;
+        ARR_TYPE* it2 = 0;
         Timing::getInstance()->startComputation();
         for (int i = 0; i < mNumGenerations; ++i)
         {
-            for (int j = 0; j < mSize; ++j)
+            // Inner cells
+            for (y = 1; y < mHeightSmall; y++)
             {
-                int livingNeighbors = mBoard[j];
-                bool** k = mBoardNeighbors + j * 8;
-                bool** offset1 = k + 8;
-
-                for (; k < offset1; ++k)
+                for (x = 1; x < mWidthSmall; x++)
                 {
-                    livingNeighbors += **k;
-                }
+                    pos = x + mWidth * y;
+                    it2 = &mBoard[pos];
+                    it = it2 - mWidth - 1;
 
-                mTempBoard[j] = livingNeighbors == 3 + mBoard[j] * (livingNeighbors == 4);
+                    livingNeighbors = *it;
+                    livingNeighbors += *(++it);
+                    livingNeighbors += *(++it);
+
+                    it = it - 2 + mWidth;
+                    livingNeighbors += *(it);
+                    it = it + 2;
+                    livingNeighbors += *(it);
+
+                    it = it - 2 + mWidth;
+                    livingNeighbors += *(it);
+                    livingNeighbors += *(++it);
+                    livingNeighbors += *(++it);
+
+                    mTempBoard[pos] = (livingNeighbors == 3) | (*it2 & (livingNeighbors == 2));
+                }
             }
+            // First row
+            y1 = 1;
+            y = 0;
+            y_ = mHeightSmall;
+            for (x = 1; x < mWidthSmall; x++)
+            {
+                pos = x + mWidth * y;
+
+                x_ = x - 1;
+                x1 = x + 1;
+
+                CALC_NEIGHBORS(mBoard, mWidth, livingNeighbors, x_, x, x1, y_, y, y1);
+
+                mTempBoard[pos] = (livingNeighbors == 3) | (mBoard[pos] & (livingNeighbors == 2));
+            }
+            // Last row
+            y_ = mHeightMini;
+            y = mHeightSmall;
+            y1 = 0;
+            for (x = 1; x < mWidthSmall; x++)
+            {
+                x_ = x - 1;
+                x1 = x + 1;
+
+                pos = x + mWidth * mHeightSmall;
+
+                CALC_NEIGHBORS(mBoard, mWidth, livingNeighbors, x_, x, x1, y_, y, y1);
+
+                mTempBoard[pos] = (livingNeighbors == 3) | (mBoard[pos] & (livingNeighbors == 2));
+            }
+
+            // NW
+            pos = 0;
+            CALC_NEIGHBORS(mBoard, mWidth, livingNeighbors, mWidthSmall, 0, 1, mHeightSmall, 0, 1);
+            mTempBoard[pos] = (livingNeighbors == 3) | (mBoard[pos] & (livingNeighbors == 2));
+
+            // Left column
+            x_ = mWidthSmall;
+            x = 0;
+            x1 = 1;
+            for (y = 1; y < mHeightSmall; y++)
+            {
+                y_ = y - 1;
+                y1 = y + 1;
+
+                pos = x + mWidth * y;
+
+                CALC_NEIGHBORS(mBoard, mWidth, livingNeighbors, x_, x, x1, y_, y, y1);
+
+                mTempBoard[pos] = (livingNeighbors == 3) | (mBoard[pos] & (livingNeighbors == 2));
+            }
+
+            // SW
+            pos = mWidth * mHeightSmall;
+            CALC_NEIGHBORS(mBoard, mWidth, livingNeighbors, mWidthSmall, 0, 1, mHeightMini, mHeightSmall, 0);
+            mTempBoard[pos] = (livingNeighbors == 3) | (mBoard[pos] & (livingNeighbors == 2));
+
+            // NE
+            pos = mWidthSmall;
+            CALC_NEIGHBORS(mBoard, mWidth, livingNeighbors, mWidthMini, mWidthSmall, 0, mHeightSmall, 0, 1);
+            mTempBoard[pos] = (livingNeighbors == 3) | (mBoard[pos] & (livingNeighbors == 2));
+
+            // Right column
+            x_ = mWidthMini;
+            x = mWidthSmall;
+            x1 = 0;
+            for (y = 1; y < mHeightSmall; y++)
+            {
+                y_ = y - 1;
+                y1 = y + 1;
+
+                pos = x + mWidth * y;
+
+                CALC_NEIGHBORS(mBoard, mWidth, livingNeighbors, x_, x, x1, y_, y, y1);
+
+                mTempBoard[pos] = (livingNeighbors == 3) | (mBoard[pos] & (livingNeighbors == 2));
+            }
+            // SE
+            pos = mWidthSmall + mWidth * mHeightSmall;
+            CALC_NEIGHBORS(mBoard, mWidth, livingNeighbors, mWidthMini, mWidthSmall, 0, mHeightMini, mHeightSmall, 0);
+            mTempBoard[pos] = (livingNeighbors == 3) | (mBoard[pos] & (livingNeighbors == 2));
+
             std::swap(mTempBoard, mBoard);
-            std::swap(mTempBoardNeighbors, mBoardNeighbors);
         }
         Timing::getInstance()->stopComputation();
         return true;
