@@ -1,8 +1,8 @@
 void kernel gol_generation(global int* board, global int* tempBoard, int useTemp, int width, int height)
 {
-    int id = get_global_id(0);
-    int x = id % width;
-    int y = id / width;
+    int x = get_global_id(0);
+    int y = get_global_id(1);
+    int id = x + width * y;
 
     int y_ = y - 1;
     y_ += (y_ < 0) * height;

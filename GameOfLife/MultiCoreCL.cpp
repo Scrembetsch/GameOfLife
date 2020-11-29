@@ -167,7 +167,7 @@ namespace CL
             mGolKernel.setArg(2, cl_int(useTemp));
             mGolKernel.setArg(3, cl_int(mWidth));
             mGolKernel.setArg(4, cl_int(mHeight));
-            mQueue.enqueueNDRangeKernel(mGolKernel, cl::NullRange, cl::NDRange(mSize), cl::NullRange);
+            mQueue.enqueueNDRangeKernel(mGolKernel, cl::NullRange, cl::NDRange(mWidth, mHeight), cl::NullRange);
             mQueue.finish();
         }
         if (useTemp)
